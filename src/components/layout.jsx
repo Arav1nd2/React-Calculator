@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Textfit } from 'react-textfit';
+import KeyHandler, { KEYDOWN } from 'react-key-handler';
 import './layout.css';
 
 class Layout extends Component {
@@ -11,7 +12,8 @@ class Layout extends Component {
       waitingForOperand : false,
       operand1 : null,
       operand2 : null,
-      secondary : "0"
+      secondary : "0",
+      text : ""
     };
     this.handleNumberClick = (number) => {
       if(this.state.waitingForOperand) {
@@ -20,11 +22,14 @@ class Layout extends Component {
           secondary : this.state.secondary + String(number)
         });
       }
-      this.setState({
-        secondary : this.state.secondary === '0' ? String(number) : this.state.secondary + String(number),
-        
-        displayValue : this.state.displayValue === '0' ? String(number) : this.state.displayValue + String(number)
-      });
+      else {
+        this.setState({
+          secondary : this.state.secondary === '0' ? String(number) : this.state.secondary + String(number),
+          
+          displayValue : this.state.displayValue === '0' ? String(number) : this.state.displayValue + String(number)
+        });
+      }
+      
     }
     this.clearButton = () => {
       this.setState({
@@ -96,10 +101,34 @@ class Layout extends Component {
   
       }
     }
+
   }
+ 
+
   render() {
     return (
       <div>
+        <KeyHandler keyEventName={KEYDOWN} keyValue="1" onKeyHandle={()=> {this.handleNumberClick(1)}}/>
+        <KeyHandler keyEventName={KEYDOWN} keyValue="2" onKeyHandle={()=> {this.handleNumberClick(2)}}/>
+        <KeyHandler keyEventName={KEYDOWN} keyValue="3" onKeyHandle={()=> {this.handleNumberClick(3)}}/>
+        <KeyHandler keyEventName={KEYDOWN} keyValue="4" onKeyHandle={()=> {this.handleNumberClick(4)}}/>
+        <KeyHandler keyEventName={KEYDOWN} keyValue="5" onKeyHandle={()=> {this.handleNumberClick(5)}}/>
+        <KeyHandler keyEventName={KEYDOWN} keyValue="6" onKeyHandle={()=> {this.handleNumberClick(6)}}/>
+        <KeyHandler keyEventName={KEYDOWN} keyValue="7" onKeyHandle={()=> {this.handleNumberClick(7)}}/>
+        <KeyHandler keyEventName={KEYDOWN} keyValue="8" onKeyHandle={()=> {this.handleNumberClick(8)}}/>
+        <KeyHandler keyEventName={KEYDOWN} keyValue="9" onKeyHandle={()=> {this.handleNumberClick(9)}}/>
+        <KeyHandler keyEventName={KEYDOWN} keyValue="0" onKeyHandle={()=> {this.handleNumberClick(0)}}/>
+        
+        <KeyHandler keyEventName={KEYDOWN} keyValue="+" onKeyHandle={()=> {this.operator('+')}}/>
+        <KeyHandler keyEventName={KEYDOWN} keyValue="-" onKeyHandle={()=> {this.operator('-')}}/>
+        <KeyHandler keyEventName={KEYDOWN} keyValue="*" onKeyHandle={()=> {this.operator('*')}}/>
+        <KeyHandler keyEventName={KEYDOWN} keyValue="/" onKeyHandle={()=> {this.operator('/')}}/>
+        <KeyHandler keyEventName={KEYDOWN} keyValue="=" onKeyHandle={()=> {this.handleEqual()}}/>
+        <KeyHandler keyEventName={KEYDOWN} keyValue="Enter" onKeyHandle={()=> {this.handleEqual()}}/>
+
+        <KeyHandler keyEventName={KEYDOWN} keyValue="Backspace" onKeyHandle={()=> {this.clearButton()}}/>
+        <KeyHandler keyEventName={KEYDOWN} keyValue="%" onKeyHandle={()=> {this.percentage()}}/>
+        
         <div className="secondary-display"><Textfit autoResize = {true}>{this.state.secondary}</Textfit></div>
         <div className = "display-area"><Textfit forceSingleModeWidth = {false}>{this.state.displayValue}</Textfit></div>
         <button className="clear-button" onClick = {() => {this.clearButton()}}>AC</button>
