@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { Textfit } from 'react-textfit';
 import './layout.css';
 
 class Layout extends Component {
@@ -9,10 +10,19 @@ class Layout extends Component {
       operator : "",
       waitingForOperand : false,
       operand1 : null,
-      operand2 : null
+      operand2 : null,
+      secondary : "0"
     };
     this.handleNumberClick = (number) => {
+      if(this.state.waitingForOperand) {
+        this.setState({
+          displayValue : this.state.displayValue + String(number),
+          secondary : this.state.secondary + String(number)
+        });
+      }
       this.setState({
+        secondary : this.state.secondary === '0' ? String(number) : this.state.secondary + String(number),
+        
         displayValue : this.state.displayValue === '0' ? String(number) : this.state.displayValue + String(number)
       });
     }
@@ -21,20 +31,24 @@ class Layout extends Component {
         displayValue : "0",
         waitingForOperand : false,
         operand1: null,
-        operand2 : null
+        operand2 : null,
+        secondary : "0",
+        operator : ""
       });
     }
     this.handleDot = () => {
       if(!this.state.displayValue.includes('.')) {
         this.setState({
-          displayValue : this.state.displayValue + '.'
+          displayValue : this.state.displayValue + '.',
+          secondary : this.state.secondary + '.'
         });
       }
     }
     this.percentage = () => {
       var value = parseFloat(this.state.displayValue);
       this.setState({
-        displayValue : String(value/100)
+        displayValue : String(value/100),
+        secondary : this.state.secondary + "% : " + String(value/100)
       });
     }
     this.sign = () => {
@@ -46,17 +60,48 @@ class Layout extends Component {
       this.setState({
         operand1 : parseFloat(this.state.displayValue),
         operator : opt,
-        waitingForOperand : true,      
+        waitingForOperand : true,
+        displayValue : "",
+        secondary : this.state.secondary + opt      
       });
-      this.setState({
-        displayValue : this.state.operand1 ? this.state.displayValue + opt : this.state.displayValue
-      });
+    }
+    this.handleEqual = () => {
+      let val1 = this.state.operand1;
+      let val2 = parseFloat(this.state.displayValue);
+      let computedValue;
+      if(this.state.operator !== "") {
+        switch(this.state.operator) {
+          case '+' :
+            computedValue = val1 + val2;
+            break;
+          case '-' :
+            computedValue = val1 - val2;
+            break;
+          case '*' :
+          computedValue = val1 * val2;
+          break;
+          case '/' :
+          computedValue = val1 / val2;
+          break;
+        
+          default : 
+            computedValue = parseFloat(this.state.displayValue);   
+            break;   
+          }
+          this.setState({
+            displayValue : String(computedValue),
+            secondary : this.state.secondary + " = " + String(computedValue),
+            operand1 : computedValue
+          });
+  
+      }
     }
   }
   render() {
     return (
       <div>
-        <div className = "display-area">{this.state.displayValue}</div>
+        <div className="secondary-display"><Textfit autoResize = {true}>{this.state.secondary}</Textfit></div>
+        <div className = "display-area"><Textfit forceSingleModeWidth = {false}>{this.state.displayValue}</Textfit></div>
         <button className="clear-button" onClick = {() => {this.clearButton()}}>AC</button>
         <button className="plus-minus-button" onClick = { ()=> {this.sign()}}>+/-</button>
         <button className="percenatge-button" onClick = { () => {this.percentage()}}>%</button>
@@ -75,7 +120,7 @@ class Layout extends Component {
         <button className="add"   onClick = { () => {this.operator('+')}}    >+</button><br/>
         <button className="numbers-zero m" onClick = { () => {this.handleNumberClick(0)}}>0</button>
         <button className="dot" onClick = { () => {this.handleDot()}}>.</button>
-        <button className="equals" >=</button>        
+        <button className="equals" onClick = {() => {this.handleEqual()}}>=</button>        
       </div>
     )
   }
