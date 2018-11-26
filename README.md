@@ -2,7 +2,7 @@
 
 A simple Calculator App made using React
 
-##Dependencies : 
+##Dependencies :<br> 
 ###React , React-DOM, React-scripts, React-textfit
 
 ####Screenshots :
